@@ -1,0 +1,81 @@
+@startuml
+!pragma layout smetana
+
+class User {
+  - Long id
+  - String email
+  - String passwordHash
+  - String displayName
+  - boolean active
+  - Instant createdAt
+  - Instant lastLoginAt
+}
+
+class Agent {
+  + Set<Group> groups
+}
+
+class Group {
+  - Long id
+  - String name
+  - String description
+  + Set<Agent> members
+}
+
+class Ticket {
+  - Long id
+  - String number
+  - String subject
+  - TicketStatus status  ' OPEN, PENDING, SOLVED
+  - Instant createdAt
+  - Instant updatedAt
+  - User requester
+  - Agent assignee
+  - Group group
+  + List<Message> messages
+}
+
+enum TicketStatus {
+  OPEN
+  PENDING
+  SOLVED
+}
+
+class Message {
+  - Long id
+  - Ticket ticket
+  - User author
+  - boolean internal      ' true = intern note
+  - String body
+  - Instant createdAt
+  + List<Attachment> attachments
+}
+
+class Attachment {
+  - Long id
+  - String fileName
+  - String mimeType
+  - long size
+  - URI url
+  - Instant createdAt
+}
+
+class View {
+  - Long id
+  - String name
+  - String description
+  - String filterJson     ' eller et Value Object
+  - String sort
+  - Agent owner           ' eller Group owner
+}
+
+User <|-- Agent
+Agent "M" -- "M" Group : membership
+Ticket "1" o-- "M" Message
+Message "1" o-- "0..M" Attachment
+Ticket "1" --> "0..1" Agent : assignee
+Ticket "1" --> "1" Group : group
+Ticket "1" --> "1" User : requester
+Agent "1" o-- "0..M" View
+Group "1" o-- "0..M" View
+@enduml

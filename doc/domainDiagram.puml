@@ -1,0 +1,34 @@
+@startuml
+!pragma layout smetana
+
+object GWork
+object User
+object Group
+object Ticket
+object Message
+object Attachment
+object View
+object Agent
+
+' Systemets overordnede indhold
+GWork *-- User
+
+
+' Brugere og grupper
+User *-- Agent
+Agent *-- Group
+
+' Tickets
+Agent o-- Ticket : requester/assignee
+Group o-- Ticket : queue
+
+' Samtale i en ticket
+Ticket --* Message
+Message --o Attachment
+
+' Views (gemte filtre/lister)
+Agent o-- View
+Group o-- View
+View o-- Ticket
+
+@enduml
