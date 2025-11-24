@@ -1,10 +1,6 @@
-package populator;
+package US1;
 
-import dat.config.HibernateConfig;
-import dat.daos.impl.UserDAO;
-import dat.dtos.UserDTO;
 import dat.entities.User;
-import dat.security.daos.SecurityDAO;
 import dat.security.entities.Role;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;

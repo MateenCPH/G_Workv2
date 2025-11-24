@@ -42,7 +42,7 @@ public class Ticket {
     private LocalDateTime updatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "requester_id", nullable = false)
+    @JoinColumn(name = "requester_id")
     private User requester;
 
     @ManyToOne

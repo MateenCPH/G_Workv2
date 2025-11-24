@@ -9,7 +9,6 @@ import dat.security.daos.SecurityDAO;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.*;
-import populator.Populator;
 
 import java.util.List;
 

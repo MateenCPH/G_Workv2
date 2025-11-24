@@ -2,8 +2,21 @@ package dat.daos.impl;
 
 import dat.daos.IDAO;
 import dat.dtos.TicketDTO;
+import jakarta.persistence.EntityManagerFactory;
 
 public class TicketDAO implements IDAO<TicketDTO, Integer> {
+
+    private static TicketDAO instance;
+    private static EntityManagerFactory emf;
+
+    public static TicketDAO getInstance(EntityManagerFactory _emf) {
+        if (instance == null) {
+            emf = _emf;
+            instance = new TicketDAO();
+        }
+        return instance;
+    }
+
     @Override
     public TicketDTO readById(Integer integer) {
         return null;
