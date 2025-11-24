@@ -179,4 +179,32 @@ public class Populator {
             throw new RuntimeException("Error populating US1 test database: " + e.getMessage());
         }
     }
+
+    public void clearDatabase() {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+
+            // Delete all entities in the correct order to avoid foreign key constraint violations
+            em.createQuery("DELETE FROM Attachment").executeUpdate();
+            em.createQuery("DELETE FROM Message").executeUpdate();
+            em.createQuery("DELETE FROM Ticket").executeUpdate();
+            em.createQuery("DELETE FROM Tag").executeUpdate();
+            em.createQuery("DELETE FROM Group").executeUpdate();
+            em.createQuery("DELETE FROM User").executeUpdate();
+            em.createQuery("DELETE FROM Role").executeUpdate();
+
+            // Reset ID sequences (PostgreSQL syntax)
+            em.createNativeQuery("ALTER SEQUENCE users_id_seq RESTART WITH 1").executeUpdate();
+            em.createNativeQuery("ALTER SEQUENCE groups_id_seq RESTART WITH 1").executeUpdate();
+            em.createNativeQuery("ALTER SEQUENCE tags_id_seq RESTART WITH 1").executeUpdate();
+            em.createNativeQuery("ALTER SEQUENCE tickets_id_seq RESTART WITH 1").executeUpdate();
+            em.createNativeQuery("ALTER SEQUENCE messages_id_seq RESTART WITH 1").executeUpdate();
+            em.createNativeQuery("ALTER SEQUENCE attachments_id_seq RESTART WITH 1").executeUpdate();
+
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error clearing US1 test database: " + e.getMessage());
+        }
+    }
 }

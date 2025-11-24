@@ -32,7 +32,6 @@ public class Message {
     @Column(name = "internal_flag")
     private boolean internalFlag;
 
-    @Lob
     @Column(name = "body")
     private String body;
 

@@ -4,8 +4,12 @@ import dat.config.HibernateConfig;
 import dat.daos.impl.TicketDAO;
 import dat.dtos.TicketDTO;
 import jakarta.persistence.EntityManagerFactory;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 public class TicketDAOTest {
     private static EntityManagerFactory emf = HibernateConfig.getEntityManagerFactoryForTest();
@@ -13,14 +17,51 @@ public class TicketDAOTest {
 
     private static Populator populator = new Populator(emf);
 
+    private TicketDTO openTicket, pendingTicket, solvedTicket;
+
     @BeforeAll
-    static void setUp() {
+    static void beforeAll(){}
+
+    @BeforeEach
+    void setUp() {
         // TODO: Populate test database with US5.Populator when needed
         populator.populateDatabase();
 
-        TicketDTO ticketDTO1 = ticketDAO.readAll().get(0);
-
+        openTicket = ticketDAO.readAll().get(0);
+        pendingTicket = ticketDAO.readAll().get(1);
+        solvedTicket = ticketDAO.readAll().get(2);
     }
+
+    @AfterEach
+    void tearDown() {
+        populator.clearDatabase();
+    }
+
+    @Test
+    void testCreateTicket() {}
+
+    @Test
+    void testReadTicketById() {
+        TicketDTO expected;
+        expected = openTicket;
+        TicketDTO actual = ticketDAO.readById(expected.getId());
+
+        assertThat(actual, is(equalTo(expected)));
+    }
+
+    @Test
+    void testReadAllTickets() {
+        List<TicketDTO> tickets = ticketDAO.readAll();
+
+        assertThat(tickets, hasSize(3));
+        assertThat(tickets, containsInAnyOrder(openTicket, pendingTicket, solvedTicket));
+    }
+
+    @Test
+    void testUpdateTicket() {}
+
+    @Test
+    void testDeleteTicket() {}
 
     @Test
     void testFindByStatus() {

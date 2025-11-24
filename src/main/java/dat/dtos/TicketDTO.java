@@ -7,13 +7,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class TicketDTO {
-    private Long id;
+    private int id;
     private String subject;
     private Ticket.TicketStatus status;
     private LocalDateTime createdAt;
@@ -58,4 +59,21 @@ public class TicketDTO {
         this.tags = tags;
     }
 
+    // Custom equals and hashCode similar to UserDTO (based on subject and status)
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        } else if (o != null && this.getClass() == o.getClass()) {
+            TicketDTO dto = (TicketDTO) o;
+            return Objects.equals(this.subject, dto.subject) && this.status == dto.status;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.subject, this.status);
+    }
 }

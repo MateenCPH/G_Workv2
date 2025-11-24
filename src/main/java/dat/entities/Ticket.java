@@ -17,6 +17,8 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@ToString
 @Table(name = "tickets")
 
 public class Ticket {
@@ -24,12 +26,11 @@ public class Ticket {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private int id;
 
     @Column(name = "subject", nullable = false)
     private String subject;
 
-    @Lob
     @Column(name = "description")
     private String description;
 

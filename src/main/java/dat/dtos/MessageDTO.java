@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class MessageDTO {
     private Long id;
-    private Long ticketId;
+    private int ticketId;
     private UserDTO author;
     private boolean internalFlag;
     private String body;

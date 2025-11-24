@@ -26,7 +26,6 @@ public class UserDAO implements IDAO<UserDTO, Integer> {
     @Override
     public UserDTO readById(Integer id) throws ApiException {
         try (EntityManager em = emf.createEntityManager()) {
-            // Implementation to read User by ID goes here
             User user = em.find(User.class, id);
             if (user == null) {
                 throw new ApiException(404, "User not found");
