@@ -22,7 +22,7 @@ public class PlantController implements IController<PlantDTO, Integer> {
     @Override
     public void readById(Context ctx)  {
         // request
-        int id = ctx.pathParamAsClass("id", Integer.class).check(this::validatePrimaryKey, "Not a valid id").get();
+        int id = ctx.pathParamAsClass("id", Integer.class).get();
         // DTO
         PlantDTO plantDTO = dao.readById(id);
         // response
@@ -93,11 +93,6 @@ public class PlantController implements IController<PlantDTO, Integer> {
         List<PlantDTO> plantDTOS = dao.readPlantsAndSortByName();
         ctx.status(200);
         ctx.json(plantDTOS, PlantDTO.class);
-    }
-
-    @Override
-    public boolean validatePrimaryKey(Integer integer) {
-        return dao.validatePrimaryKey(integer);
     }
 
     @Override

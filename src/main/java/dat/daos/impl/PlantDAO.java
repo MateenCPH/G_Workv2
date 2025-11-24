@@ -92,12 +92,4 @@ public class PlantDAO implements IDAO<PlantDTO, Integer> {
             return query.getResultList().stream().sorted(Comparator.comparing(PlantDTO::getPlantName)).toList();
         }
     }
-
-    @Override
-    public boolean validatePrimaryKey(Integer integer) {
-        try (EntityManager em = emf.createEntityManager()) {
-            Plant plant = em.find(Plant.class, integer);
-            return plant != null;
-        }
-    }
 }

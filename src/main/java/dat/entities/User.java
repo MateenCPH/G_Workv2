@@ -32,7 +32,7 @@ public class User implements Serializable, ISecurityUser {
     @Column(name = "email", length = 50, nullable = false, unique = true)
     private String email;
 
-    @Column(name = "username", length = 25, nullable = false, unique = true)
+    @Column(name = "username", length = 25)
     private String username;
 
     @Basic(optional = false)

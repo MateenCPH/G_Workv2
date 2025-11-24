@@ -16,7 +16,7 @@ public class GroupDTO {
     private Long id;
     private String name;
     private String description;
-    private Set<Long> memberIds = new HashSet<>();
+    private Set<Integer> memberIds = new HashSet<>();
 
     // Constructor from entity
     public GroupDTO(Group group) {

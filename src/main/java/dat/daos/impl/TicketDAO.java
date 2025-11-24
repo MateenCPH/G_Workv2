@@ -6,7 +6,7 @@ import dat.dtos.TicketDTO;
 public class TicketDAO implements IDAO<TicketDTO, Integer> {
     @Override
     public TicketDTO readById(Integer integer) {
-
+        return null;
     }
 
     @Override
