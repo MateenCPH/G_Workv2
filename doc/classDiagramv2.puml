@@ -1,0 +1,91 @@
+@startuml
+!pragma layout smetana
+
+class User {
+  - Long id
+  - String email
+  - String passwordHash
+  - String firstName
+  - String lastName
+  - boolean active
+  - Role role      ' AGENT, CUSTOMER, ADMIN
+  - Instant createdAt
+  - Instant lastLoginAt
+}
+
+enum Role {
+  AGENT
+  CUSTOMER
+  ADMIN
+}
+
+class Group {
+  - Long id
+  - String name
+  - String description
+  + Set<User> members
+}
+
+class Ticket {
+  - Long id
+  - String number
+  - String subject
+  - String description
+  - TicketStatus status     ' OPEN, PENDING, SOLVED
+  - Instant createdAt
+  - Instant updatedAt
+  - String requesterEmail   ' eller Customer-klasse
+  - User assignee           ' must have role=AGENT
+  - Group group
+  + List<Message> messages
+  + Set<Tag> tags
+}
+
+enum TicketStatus {
+  OPEN
+  PENDING
+  SOLVED
+}
+
+class Message {
+  - Long id
+  - Ticket ticket
+  - User author             ' kan være AGENT eller CUSTOMER
+  - boolean internal
+  - String body
+  - Instant createdAt
+  + List<Attachment> attachments
+}
+
+class Attachment {
+  - Long id
+  - String fileName
+  - String mimeType
+  - long size
+  - URI url
+  - Instant createdAt
+}
+
+class Tag {
+  - Long id
+  - String name             ' fx "Runners", "Indkøb"
+}
+
+class View {
+  - Long id
+  - String name
+  - String description
+  - String filterJson       ' fx {"tags":["Runners"],"status":"OPEN"}
+  - User owner              ' eller Group owner
+}
+
+' Relationer
+User "M" -- "M" Group : membership
+Ticket "1" --> "0..1" User : assignee (role=AGENT)
+Ticket "1" --> "1" Group : group
+Ticket "1" o-- "M" Message
+Message "1" o-- "0..M" Attachment
+Ticket "M" -- "M" Tag
+User "1" o-- "0..M" View
+Group "1" o-- "0..M" View
+@enduml

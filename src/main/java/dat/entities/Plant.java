@@ -9,7 +9,6 @@ import lombok.Setter;
 
 @Entity
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "plant")
 public class Plant {

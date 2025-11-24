@@ -1,0 +1,27 @@
+@startuml
+!pragma layout smetana
+
+object GWork
+object User
+object Group
+object Ticket
+object Message
+object Attachment
+object View
+object Tag
+
+GWork *-- User
+GWork *-- Group
+GWork *-- Ticket
+GWork *-- View
+GWork *-- Tag
+
+User o-- Group : membership
+Group o-- Ticket : queue
+User o-- Ticket : assignee (AGENT)
+Ticket --* Message
+Message --o Attachment
+Ticket o-- Tag
+User o-- View
+Group o-- View
+@enduml

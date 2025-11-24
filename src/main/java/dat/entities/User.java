@@ -1,5 +1,7 @@
-package dat.security.entities;
+package dat.entities;
 
+import dat.security.entities.ISecurityUser;
+import dat.security.entities.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.mindrot.jbcrypt.BCrypt;
@@ -9,10 +11,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Purpose: To handle security in the API
- * Author: Thomas Hartmann
- */
 @Entity
 @Table(name = "users")
 @NamedQueries(@NamedQuery(name = "User.deleteAllRows", query = "DELETE from User"))
@@ -27,16 +25,46 @@ public class User implements Serializable, ISecurityUser {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Basic(optional = false)
-    @Column(name = "username", length = 25)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
+
+    @Column(name = "email", length = 50, nullable = false, unique = true)
+    private String email;
+
+    @Column(name = "username", length = 25, nullable = false, unique = true)
     private String username;
+
     @Basic(optional = false)
     @Column(name = "password")
     private String password;
 
-    @JoinTable(name = "user_roles", joinColumns = {@JoinColumn(name = "user_name", referencedColumnName = "username")}, inverseJoinColumns = {@JoinColumn(name = "role_name", referencedColumnName = "name")})
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "active")
+    private boolean active = true;
+
+    @JoinTable(name = "user_roles",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_name", referencedColumnName = "name")})
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     private Set<Role> roles = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(name = "user_group",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
+    private Set<Group> groups = new HashSet<>();
+
+    @OneToMany(mappedBy = "requester")
+    private Set<dat.entities.Ticket> requestedTickets = new HashSet<>();
+
+    @OneToMany(mappedBy = "assignee")
+    private Set<dat.entities.Ticket> assignedTickets = new HashSet<>();
 
     public Set<String> getRolesAsStrings() {
         if (roles.isEmpty()) {
@@ -53,13 +81,13 @@ public class User implements Serializable, ISecurityUser {
         return BCrypt.checkpw(pw, this.password);
     }
 
-    public User(String userName, String userPass) {
-        this.username = userName;
+    public User(String eMail, String userPass) {
+        this.email = eMail;
         this.password = BCrypt.hashpw(userPass, BCrypt.gensalt());
     }
 
-    public User(String userName, Set<Role> roleEntityList) {
-        this.username = userName;
+    public User(String eMail, Set<Role> roleEntityList) {
+        this.email = eMail;
         this.roles = roleEntityList;
     }
 
@@ -81,4 +109,3 @@ public class User implements Serializable, ISecurityUser {
                 });
     }
 }
-

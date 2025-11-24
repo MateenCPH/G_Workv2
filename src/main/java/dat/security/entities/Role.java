@@ -1,5 +1,6 @@
 package dat.security.entities;
 
+import dat.entities.User;
 import jakarta.persistence.*;
 import lombok.ToString;
 

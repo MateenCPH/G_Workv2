@@ -1,8 +1,7 @@
 package dat.config;
 
-import dat.entities.Plant;
+import dat.entities.*;
 import dat.security.entities.Role;
-import dat.security.entities.User;
 import dat.utils.Utils;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.SessionFactory;
@@ -42,9 +41,14 @@ public class HibernateConfig {
 
     // TODO: IMPORTANT: Add Entity classes here for them to be registered with Hibernate
     private static void getAnnotationConfiguration(Configuration configuration) {
-        configuration.addAnnotatedClass(Plant.class);
         configuration.addAnnotatedClass(User.class);
         configuration.addAnnotatedClass(Role.class);
+        //Add all classes from entities package
+        configuration.addAnnotatedClass(Attachment.class);
+        configuration.addAnnotatedClass(Group.class);
+        configuration.addAnnotatedClass(Message.class);
+        configuration.addAnnotatedClass(Tag.class);
+        configuration.addAnnotatedClass(Ticket.class);
     }
 
     private static EntityManagerFactory createEMF(boolean forTest) {
@@ -97,7 +101,7 @@ public class HibernateConfig {
 
     private static Properties setDevProperties(Properties props) {
         String DBName = Utils.getPropertyValue("DB_NAME", "config.properties");
-        props.put("hibernate.connection.url", "jdbc:postgresql://db:5432/" + DBName);
+        props.put("hibernate.connection.url", "jdbc:postgresql://localhost:5432/" + DBName);
         props.put("hibernate.connection.username", "postgres");
         props.put("hibernate.connection.password", "postgres");
         return props;

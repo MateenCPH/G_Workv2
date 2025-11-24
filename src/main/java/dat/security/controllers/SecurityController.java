@@ -3,17 +3,17 @@ package dat.security.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nimbusds.jose.JOSEException;
+import dat.entities.User;
 import dat.utils.Utils;
 import dat.config.HibernateConfig;
 import dat.security.daos.ISecurityDAO;
 import dat.security.daos.SecurityDAO;
-import dat.security.entities.User;
 import dat.security.exceptions.ApiException;
 import dat.security.exceptions.NotAuthorizedException;
 import dat.security.exceptions.ValidationException;
-import dk.bugelhartmann.ITokenSecurity;
-import dk.bugelhartmann.TokenSecurity;
-import dk.bugelhartmann.UserDTO;
+import dat.security.tokenSecurity.ITokenSecurity;
+import dat.security.tokenSecurity.TokenSecurity;
+import dat.dtos.UserDTO;
 import io.javalin.http.Handler;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.UnauthorizedResponse;
@@ -55,7 +55,7 @@ public class SecurityController implements ISecurityController {
             ObjectNode returnObject = objectMapper.createObjectNode(); // for sending json messages back to the client
             try {
                 UserDTO user = ctx.bodyAsClass(UserDTO.class);
-                UserDTO verifiedUser = securityDAO.getVerifiedUser(user.getUsername(), user.getPassword());
+                UserDTO verifiedUser = securityDAO.getVerifiedUser(user.getEmail(), user.getPassword());
                 String token = createToken(verifiedUser);
 
                 ctx.status(200).json(returnObject
