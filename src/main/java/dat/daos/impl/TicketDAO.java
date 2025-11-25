@@ -176,7 +176,17 @@ public class TicketDAO implements IDAO<TicketDTO, Integer> {
     }
 
     @Override
-    public void delete(Integer integer) {
+    public void delete(Integer id) {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            Ticket ticket = em.find(Ticket.class, id);
 
+            if (ticket == null) {
+                em.getTransaction().rollback();
+                throw new EntityNotFoundException("Ticket with ID " + id + " not found");
+            }
+            em.remove(ticket);
+            em.getTransaction().commit();
+        }
     }
 }

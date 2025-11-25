@@ -6,6 +6,7 @@ import dat.entities.User;
 import dat.exceptions.ApiException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityNotFoundException;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.List;
@@ -64,6 +65,9 @@ public class UserDAO implements IDAO<UserDTO, Integer> {
             List<User> users = em.createQuery("SELECT u FROM User u WHERE u.firstName = :firstName", User.class)
                     .setParameter("firstName", firstName)
                     .getResultList();
+            if (users.isEmpty()) {
+                throw new EntityNotFoundException("No users found with first name: " + firstName);
+            }
             return users.stream().map(UserDTO::new).toList();
         }
     }
@@ -126,7 +130,17 @@ public class UserDAO implements IDAO<UserDTO, Integer> {
     }
 
     @Override
-    public void delete(Integer integer) throws ApiException {
-        return;
+    public void delete(Integer id) {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            User user = em.find(User.class, id);
+
+            if (user == null) {
+                em.getTransaction().rollback();
+                throw new EntityNotFoundException("User with id: " + id + " not found");
+            }
+            em.remove(user);
+            em.getTransaction().commit();
+        }
     }
 }

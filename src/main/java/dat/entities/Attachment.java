@@ -15,6 +15,10 @@ public class Attachment {
     @Column(name = "id")
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "message_id")
+    private Message message;
+
     @Setter
     @Column(name = "file_name", nullable = false)
     private String fileName;
@@ -36,11 +40,22 @@ public class Attachment {
         this.url = url;
     }
 
-    public Attachment(AttachmentDTO attachmentDTO){
-        this.id = attachmentDTO.getId();
-        this.fileName = attachmentDTO.getFileName();
-        this.mediaType = attachmentDTO.getMediaType();
-        this.size = attachmentDTO.getSize();
-        this.url = attachmentDTO.getUrl();
+    public Attachment(String fileName, String mediaType, long size, String url, Message message) {
+        this.fileName = fileName;
+        this.mediaType = mediaType;
+        this.size = size;
+        this.url = url;
+        this.message = message;
     }
+
+    // Add this constructor to Attachment.java
+    public Attachment(AttachmentDTO dto, Message message) {
+        this.id = dto.getId();
+        this.message = message;
+        this.fileName = dto.getFileName();
+        this.mediaType = dto.getMediaType();
+        this.size = dto.getSize();
+        this.url = dto.getUrl();
+    }
+
 }

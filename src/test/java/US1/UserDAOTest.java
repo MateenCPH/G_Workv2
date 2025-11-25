@@ -131,6 +131,14 @@ class UserDAOTest {
     }
 
     @Test
+    @DisplayName("Test delete - should delete user by ID")
+    void deleteUser() throws ApiException {
+        assertThat(userDAO.readAll(), hasSize(5));
+        userDAO.delete(agent2DTO.getId());
+        assertThat(userDAO.readAll(), hasSize(4));
+    }
+
+    @Test
     @DisplayName("Test readAll - should return only active users")
     void readAllActiveUsers() {
 

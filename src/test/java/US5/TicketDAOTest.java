@@ -109,7 +109,11 @@ public class TicketDAOTest {
     }
 
     @Test
-    void testDeleteTicket() {}
+    void testDeleteTicket() {
+        assertThat(ticketDAO.readAll(), hasSize(3));
+        ticketDAO.delete(openTicket.getId());
+        assertThat(ticketDAO.readAll(), hasSize(2));
+    }
 
     @Test
     void testFindByStatus() {
