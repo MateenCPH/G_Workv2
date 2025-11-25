@@ -67,7 +67,6 @@ class UserDAOTest {
     @Test
     @DisplayName("Test readById - should return user by ID")
     void readById() throws ApiException {
-        // Arrange
         UserDTO expected;
         expected = adminDTO;
         UserDTO actual = userDAO.readById(expected.getId());
@@ -112,6 +111,7 @@ class UserDAOTest {
         UserDTO expected;
         expected = agent2DTO;
         List<UserDTO> actual = userDAO.readByFirstName(expected.getFirstName());
+
         // Assert
         assertThat(actual, hasItem(expected));
     }

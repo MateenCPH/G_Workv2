@@ -54,11 +54,9 @@ public class User implements Serializable, ISecurityUser {
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     private Set<Role> roles = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(name = "user_group",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "group_id"))
-    private Set<Group> groups = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id")
+    private Group group;
 
     @OneToMany(mappedBy = "requester")
     private Set<dat.entities.Ticket> requestedTickets = new HashSet<>();

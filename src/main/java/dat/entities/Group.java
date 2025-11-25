@@ -1,16 +1,14 @@
 package dat.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "groups")
 public class Group {
@@ -20,15 +18,12 @@ public class Group {
     @Column(name = "id")
     private Long id;
 
-    @Setter
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @Setter
     @Column(name = "description")
     private String description;
 
-    @Setter
-    @ManyToMany(mappedBy = "groups")
+    @OneToMany(mappedBy = "group")
     private Set<User> members = new HashSet<>();
 }

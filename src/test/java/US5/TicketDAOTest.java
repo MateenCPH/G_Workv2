@@ -38,7 +38,28 @@ public class TicketDAOTest {
     }
 
     @Test
-    void testCreateTicket() {}
+    void testCreateTicket() {
+        // Arrange - Create a new ticket DTO with required fields
+        TicketDTO newTicketDTO = new TicketDTO();
+        newTicketDTO.setSubject("New Test Ticket");
+        newTicketDTO.setDescription("This is a test ticket description");
+        newTicketDTO.setStatus(dat.entities.Ticket.TicketStatus.OPEN);
+
+        // Act - Create the ticket
+        TicketDTO createdTicket = ticketDAO.create(newTicketDTO);
+
+        // Assert - Verify the ticket was created with correct values
+        assertThat(createdTicket, is(notNullValue()));
+        assertThat(createdTicket.getId(), is(greaterThan(0)));
+        assertThat(createdTicket.getSubject(), is(equalTo("New Test Ticket")));
+        assertThat(createdTicket.getDescription(), is(equalTo("This is a test ticket description")));
+        assertThat(createdTicket.getStatus(), is(equalTo(dat.entities.Ticket.TicketStatus.OPEN)));
+
+        // Verify it's persisted by reading it back
+        TicketDTO retrievedTicket = ticketDAO.readById(createdTicket.getId());
+        assertThat(retrievedTicket, is(equalTo(createdTicket)));
+    }
+
 
     @Test
     void testReadTicketById() {
@@ -58,7 +79,34 @@ public class TicketDAOTest {
     }
 
     @Test
-    void testUpdateTicket() {}
+    void testUpdateTicket() {
+        // Arrange - Get an existing ticket and prepare updates
+        TicketDTO ticketToUpdate = openTicket;
+        int originalId = ticketToUpdate.getId();
+
+        // Create a DTO with updated fields
+        TicketDTO updateDTO = new TicketDTO();
+        updateDTO.setSubject("Updated Subject");
+
+        // Act - Update the ticket
+        TicketDTO updatedTicket = ticketDAO.update(originalId, updateDTO);
+
+        // Assert - Verify the update was successful
+        assertThat(updatedTicket, is(notNullValue()));
+        assertThat(updatedTicket.getId(), is(equalTo(originalId)));
+        assertThat(updatedTicket.getSubject(), is(equalTo("Updated Subject")));
+
+        // Verify the description remained unchanged (not in updateDTO)
+        assertThat(updatedTicket.getDescription(), is(equalTo(ticketToUpdate.getDescription())));
+
+        // Verify persistence by reading it back
+        TicketDTO retrievedTicket = ticketDAO.readById(originalId);
+        assertThat(retrievedTicket.getSubject(), is(equalTo("Updated Subject")));
+
+        // Verify updatedAt was automatically updated (should be after createdAt)
+        assertThat(retrievedTicket.getUpdatedAt(), is(notNullValue()));
+        assertThat(retrievedTicket.getUpdatedAt(), is(greaterThanOrEqualTo(retrievedTicket.getCreatedAt())));
+    }
 
     @Test
     void testDeleteTicket() {}

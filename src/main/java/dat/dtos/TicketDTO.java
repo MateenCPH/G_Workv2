@@ -1,21 +1,21 @@
 package dat.dtos;
 
 import dat.entities.Ticket;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class TicketDTO {
     private int id;
     private String subject;
+    private String description;
     private Ticket.TicketStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -28,6 +28,7 @@ public class TicketDTO {
     public TicketDTO(Ticket ticket) {
         this.id = ticket.getId();
         this.subject = ticket.getSubject();
+        this.description = ticket.getDescription();
         this.status = ticket.getStatus();
         this.createdAt = ticket.getCreatedAt();
         this.updatedAt = ticket.getUpdatedAt();
@@ -46,9 +47,10 @@ public class TicketDTO {
         }
     }
 
-    public TicketDTO(String subject, Ticket.TicketStatus status, LocalDateTime updatedAt,
+    public TicketDTO(String subject, String description, Ticket.TicketStatus status, LocalDateTime updatedAt,
                      UserDTO requesterEmail, UserDTO assignee, GroupDTO group, List<MessageDTO> messages, Set<TagDTO> tags) {
         this.subject = subject;
+        this.description = description;
         this.status = status;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
