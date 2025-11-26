@@ -9,7 +9,7 @@ import jakarta.persistence.EntityManagerFactory;
 public class Main {
 
     public static void main(String[] args) {
-        ApplicationConfig.startServer(7007);
+        //ApplicationConfig.startServer(7007);
         //Populate.main(args);
         //New testt
         //new test again
