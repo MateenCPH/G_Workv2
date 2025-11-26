@@ -10,7 +10,7 @@ public class Main {
 
     public static void main(String[] args) {
         ApplicationConfig.startServer(7007);
-        Populate.main(args);
+        //Populate.main(args);
         //New test
         //new test again
 //        EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory();
