@@ -138,9 +138,10 @@ class UserDAOTest {
         assertThat(userDAO.readAll(), hasSize(4));
     }
 
+    /*
     @Test
     @DisplayName("Test readAll - should return only active users")
     void readAllActiveUsers() {
 
-    }
+    }*/
 }

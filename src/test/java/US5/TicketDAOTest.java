@@ -115,6 +115,7 @@ public class TicketDAOTest {
         assertThat(ticketDAO.readAll(), hasSize(2));
     }
 
+    /*
     @Test
     void testFindByStatus() {
         // TODO: Implement test for finding tickets by status
@@ -188,5 +189,5 @@ public class TicketDAOTest {
     @Test
     void testFindRecentlyUpdated() {
         // TODO: Implement test for finding recently updated tickets
-    }
+    }*/
 }
