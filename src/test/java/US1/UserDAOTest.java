@@ -50,9 +50,6 @@ class UserDAOTest {
             em.createNativeQuery("ALTER SEQUENCE users_id_seq RESTART WITH 1").executeUpdate();
             em.getTransaction().commit();
         }
-        if (emf != null) {
-            emf.close();
-        }
     }
 
     @Test
