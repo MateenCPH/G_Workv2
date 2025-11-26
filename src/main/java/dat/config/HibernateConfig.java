@@ -101,7 +101,7 @@ public class HibernateConfig {
 
     private static Properties setDevProperties(Properties props) {
         String DBName = Utils.getPropertyValue("DB_NAME", "config.properties");
-        props.put("hibernate.connection.url", "jdbc:postgresql://db:5432/" + DBName);
+        props.put("hibernate.connection.url", "jdbc:postgresql://localhost:5432/" + DBName);
         props.put("hibernate.connection.username", "postgres");
         props.put("hibernate.connection.password", "postgres");
         return props;
@@ -110,7 +110,7 @@ public class HibernateConfig {
     private static Properties setTestProperties(Properties props) {
         props.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         props.put("hibernate.connection.driver_class", "org.postgresql.Driver");
-        props.put("hibernate.connection.url", "jdbc:postgresql://localhost:5432/test_db");
+        props.put("hibernate.connection.url", "jdbc:postgresql://db:5432/test_db");
         props.put("hibernate.connection.username", "postgres");
         props.put("hibernate.connection.password", "postgres");
         props.put("hibernate.archive.autodetection", "class");
