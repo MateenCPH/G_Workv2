@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args) {
         ApplicationConfig.startServer(7007);
         //Populate.main(args);
-        //New test
+        //New testt
         //new test again
 //        EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory();
 //        PlantDAO dao = PlantDAO.getInstance(emf);
