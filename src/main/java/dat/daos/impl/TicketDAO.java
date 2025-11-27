@@ -1,15 +1,19 @@
 package dat.daos.impl;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import dat.daos.IDAO;
 import dat.dtos.TicketDTO;
 import dat.entities.Group;
 import dat.entities.Tag;
 import dat.entities.Ticket;
 import dat.entities.User;
+import dat.exceptions.ApiException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.TypedQuery;
+import org.hibernate.exception.ConstraintViolationException;
 
 import java.util.List;
 import java.util.Set;
@@ -54,7 +58,7 @@ public class TicketDAO implements IDAO<TicketDTO, Integer> {
     }
 
     @Override
-    public TicketDTO create(TicketDTO ticketDTO) {
+    public TicketDTO create(TicketDTO ticketDTO) throws InvalidFormatException, JsonParseException {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
 
@@ -104,7 +108,7 @@ public class TicketDAO implements IDAO<TicketDTO, Integer> {
 
             return new TicketDTO(ticket);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create ticket: " + e.getMessage(), e);
+            throw new ApiException(400, "Failed to create ticket: " + e.getMessage());
         }
     }
 
@@ -172,6 +176,8 @@ public class TicketDAO implements IDAO<TicketDTO, Integer> {
             em.getTransaction().commit();
 
             return new TicketDTO(ticket);
+        } catch (ConstraintViolationException e) {
+            throw new ApiException(400, "Ticket could not be updated: " + e.getMessage());
         }
     }
 

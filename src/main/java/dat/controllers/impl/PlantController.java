@@ -39,7 +39,6 @@ public class PlantController implements IController<PlantDTO, Integer> {
         ctx.json(plantDTOS, PlantDTO.class);
     }
 
-    @Override
     public void readByType(Context ctx) {
         // request
         Plant.PlantType type = Plant.PlantType.valueOf(ctx.pathParam("type"));
@@ -72,7 +71,7 @@ public class PlantController implements IController<PlantDTO, Integer> {
     }
 
     public void readByMaxHeight(Context ctx) {
-        //request
+        // request
         int height = ctx.pathParamAsClass("maxHeight", Integer.class).check(h -> h > 0, "Height must be greater than 0").get();
         // List of DTOS
         List<PlantDTO> plantDTOS = dao.readByMaximumHeight(height);
@@ -95,13 +94,13 @@ public class PlantController implements IController<PlantDTO, Integer> {
         ctx.json(plantDTOS, PlantDTO.class);
     }
 
-    @Override
-    public PlantDTO validateEntity(Context ctx) {
-        return ctx.bodyValidator(PlantDTO.class)
-                .check( h -> h.getPlantType() != null, "Plant type must be set")
-                .check( h -> h.getPlantName() != null && !h.getPlantName().isEmpty(), "Plant name must be set")
-                .check(h -> h.getMaxHeight() > 0, "Plant height must be greater than 0")
-                .check(h -> h.getPlantPrice() > 0, "Plant price must be greater than 0")
-                .get();
-    }
+//    @Override
+//    public PlantDTO validateEntity(Context ctx) {
+//        return ctx.bodyValidator(PlantDTO.class)
+//                .check( h -> h.getPlantType() != null, "Plant type must be set")
+//                .check( h -> h.getPlantName() != null && !h.getPlantName().isEmpty(), "Plant name must be set")
+//                .check(h -> h.getMaxHeight() > 0, "Plant height must be greater than 0")
+//                .check(h -> h.getPlantPrice() > 0, "Plant price must be greater than 0")
+//                .get();
+//    }
 }
