@@ -9,8 +9,8 @@ import jakarta.persistence.EntityManagerFactory;
 public class Main {
 
     public static void main(String[] args) {
-        //ApplicationConfig.startServer(7007);
-        //Populate.main(args);
+        ApplicationConfig.startServer(5005);
+        Populate.main(args);
         //New testt
         //new test again
 //        EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory();

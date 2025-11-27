@@ -12,7 +12,7 @@ public class Populator {
         this.emf = _emf;
     }
 
-    public void populateDatabase() {
+    public static void populateDatabase() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
 

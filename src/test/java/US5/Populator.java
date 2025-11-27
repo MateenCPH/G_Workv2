@@ -16,7 +16,7 @@ public class Populator {
     private static EntityManagerFactory emf;
 
     public Populator(EntityManagerFactory _emf) {
-        emf = _emf;
+        this.emf = _emf;
     }
 
     /**
