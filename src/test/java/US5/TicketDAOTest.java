@@ -7,12 +7,15 @@ import dat.daos.impl.TicketDAO;
 import dat.dtos.TicketDTO;
 import dat.exceptions.ApiException;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.*;
 
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TicketDAOTest {
     private static EntityManagerFactory emf = HibernateConfig.getEntityManagerFactoryForTest();
@@ -79,11 +82,25 @@ public class TicketDAOTest {
     }
 
     @Test
+    void testReadTicketById_notFound_throws() {
+        assertThrows(EntityNotFoundException.class, () -> ticketDAO.readById(999));
+    }
+
+    @Test
     void testReadAllTickets() {
         List<TicketDTO> tickets = ticketDAO.readAll();
 
         assertThat(tickets, hasSize(3));
         assertThat(tickets, containsInAnyOrder(openTicket, pendingTicket, solvedTicket));
+    }
+
+    @Test
+    void testReadAllTickets_empty_throws() {
+        // Arrange: clear all data
+        populator.clearDatabase();
+
+        // Act + Assert
+        assertThrows(EntityNotFoundException.class, () -> ticketDAO.readAll());
     }
 
     @Test
@@ -117,10 +134,24 @@ public class TicketDAOTest {
     }
 
     @Test
+    void testUpdateTicket_notFound_returnsNull() {
+        TicketDTO updateDTO = new TicketDTO();
+        updateDTO.setSubject("Won't matter");
+
+        TicketDTO result = ticketDAO.update(999_999, updateDTO);
+        assertNull(result);
+    }
+
+    @Test
     void testDeleteTicket() {
         assertThat(ticketDAO.readAll(), hasSize(3));
         ticketDAO.delete(openTicket.getId());
         assertThat(ticketDAO.readAll(), hasSize(2));
+    }
+
+    @Test
+    void testDeleteTicket_notFound_throws() {
+        assertThrows(EntityNotFoundException.class, () -> ticketDAO.delete(999_999));
     }
 
     /*

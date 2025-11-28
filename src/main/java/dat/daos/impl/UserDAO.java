@@ -39,10 +39,12 @@ public class UserDAO implements IDAO<UserDTO, Integer> {
         try (EntityManager em = emf.createEntityManager()) {
             User user = em.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
                     .setParameter("email", email)
-                    .getSingleResult();
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
             if (user == null) {
                 throw new ApiException(404, "User not found");
-        }
+            }
             return new UserDTO(user);
         }
     }
@@ -88,17 +90,14 @@ public class UserDAO implements IDAO<UserDTO, Integer> {
     @Override
     public UserDTO update(Integer id, UserDTO userDTO) throws ApiException {
         try (EntityManager em = emf.createEntityManager()) {
-            User user = em.find(User.class, id);
+            em.getTransaction().begin();
 
+            User user = em.find(User.class, id);
             if (user == null) {
                 throw new ApiException(404, "User not found");
             }
 
             // Update fields if provided
-            if (userDTO.getEmail() != null && !userDTO.getEmail().isEmpty()) {
-                user.setEmail(userDTO.getEmail());
-            }
-
             if (userDTO.getEmail() != null && !userDTO.getEmail().isEmpty()) {
                 user.setEmail(userDTO.getEmail());
             }
@@ -123,7 +122,9 @@ public class UserDAO implements IDAO<UserDTO, Integer> {
             em.merge(user);
             em.getTransaction().commit();
 
-            return new  UserDTO(user);
+            return new UserDTO(user);
+        } catch (ApiException e) {
+            throw e;
         } catch (Exception e) {
             throw new ApiException(500, "Error updating user: " + e.getMessage());
         }

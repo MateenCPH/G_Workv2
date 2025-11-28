@@ -9,10 +9,7 @@ import dat.entities.Tag;
 import dat.entities.Ticket;
 import dat.entities.User;
 import dat.exceptions.ApiException;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.TypedQuery;
+import jakarta.persistence.*;
 import org.hibernate.exception.ConstraintViolationException;
 
 import java.util.List;
@@ -38,10 +35,9 @@ public class TicketDAO implements IDAO<TicketDTO, Integer> {
             TypedQuery<TicketDTO> query = em.createQuery("SELECT new dat.dtos.TicketDTO(t) FROM Ticket t WHERE t.id = :id", TicketDTO.class);
             query.setParameter("id", id);
             TicketDTO ticketDTO = query.getSingleResult();
-            if (ticketDTO == null) {
-                throw new EntityNotFoundException("Ticket with ID " + id + " not found");
-            }
             return ticketDTO;
+        } catch (EntityNotFoundException | NoResultException e) {
+            throw new EntityNotFoundException("Ticket with ID " + id + " not found");
         }
     }
 

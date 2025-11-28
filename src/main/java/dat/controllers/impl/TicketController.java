@@ -34,7 +34,7 @@ public class TicketController implements IController<TicketDTO, Integer> {
             ctx.json(ticketDTO);
         } catch (IllegalArgumentException e) {
             throw new ApiException(400, "Invalid id: " + ctx.pathParam("id"));
-        } catch (NoResultException e) {
+        } catch (NoResultException | EntityNotFoundException e) {
             throw new ApiException(404, "Ticket with id " + ctx.pathParam("id") + " not found");
         }
     }
