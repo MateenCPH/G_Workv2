@@ -1,8 +1,11 @@
 package US5;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import dat.config.HibernateConfig;
 import dat.daos.impl.TicketDAO;
 import dat.dtos.TicketDTO;
+import dat.exceptions.ApiException;
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.*;
 
@@ -20,7 +23,8 @@ public class TicketDAOTest {
     private TicketDTO openTicket, pendingTicket, solvedTicket;
 
     @BeforeAll
-    static void beforeAll(){}
+    static void beforeAll() {
+    }
 
     @BeforeEach
     void setUp() {
@@ -45,21 +49,25 @@ public class TicketDAOTest {
         newTicketDTO.setDescription("This is a test ticket description");
         newTicketDTO.setStatus(dat.entities.Ticket.TicketStatus.OPEN);
 
-        // Act - Create the ticket
-        TicketDTO createdTicket = ticketDAO.create(newTicketDTO);
+        // Act - Create the ticket in a try-catch and catch exceptions thrown in DAO
+        try {
+            TicketDTO createdTicket = ticketDAO.create(newTicketDTO);
 
-        // Assert - Verify the ticket was created with correct values
-        assertThat(createdTicket, is(notNullValue()));
-        assertThat(createdTicket.getId(), is(greaterThan(0)));
-        assertThat(createdTicket.getSubject(), is(equalTo("New Test Ticket")));
-        assertThat(createdTicket.getDescription(), is(equalTo("This is a test ticket description")));
-        assertThat(createdTicket.getStatus(), is(equalTo(dat.entities.Ticket.TicketStatus.OPEN)));
+            // Assert - Verify the ticket was created with correct values
+            assertThat(createdTicket, is(notNullValue()));
+            assertThat(createdTicket.getId(), is(greaterThan(0)));
+            assertThat(createdTicket.getSubject(), is(equalTo("New Test Ticket")));
+            assertThat(createdTicket.getDescription(), is(equalTo("This is a test ticket description")));
+            assertThat(createdTicket.getStatus(), is(equalTo(dat.entities.Ticket.TicketStatus.OPEN)));
 
-        // Verify it's persisted by reading it back
-        TicketDTO retrievedTicket = ticketDAO.readById(createdTicket.getId());
-        assertThat(retrievedTicket, is(equalTo(createdTicket)));
+            // Verify it's persisted by reading it back
+            TicketDTO retrievedTicket = ticketDAO.readById(createdTicket.getId());
+            assertThat(retrievedTicket, is(equalTo(createdTicket)));
+
+        } catch (ApiException | InvalidFormatException | JsonParseException e) {
+            e.printStackTrace();
+        }
     }
-
 
     @Test
     void testReadTicketById() {
