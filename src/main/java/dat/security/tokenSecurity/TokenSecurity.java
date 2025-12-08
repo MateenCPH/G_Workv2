@@ -26,10 +26,10 @@ public class TokenSecurity implements ITokenSecurity {
     public UserDTO getUserWithRolesFromToken(String token) throws ParseException {
         SignedJWT jwt = SignedJWT.parse(token);
         String roles = jwt.getJWTClaimsSet().getClaim("roles").toString();
-        String username = jwt.getJWTClaimsSet().getClaim("username").toString();
+        String email = jwt.getJWTClaimsSet().getClaim("email").toString();
         int userid = Integer.parseInt(jwt.getJWTClaimsSet().getClaim("userid").toString());
-        Set<String> rolesSet = (Set)Arrays.stream(roles.split(",")).collect(Collectors.toSet());
-        return new UserDTO(userid, username, rolesSet);
+        Set<String> rolesSet = Arrays.stream(roles.split(",")).collect(Collectors.toSet());
+        return new UserDTO(userid, email, rolesSet);
     }
 
     public boolean tokenIsValid(String token, String secret) throws ParseException, JOSEException {
@@ -43,14 +43,14 @@ public class TokenSecurity implements ITokenSecurity {
 
     public int timeToExpire(String token) throws ParseException {
         SignedJWT jwt = SignedJWT.parse(token);
-        return (int)(jwt.getJWTClaimsSet().getExpirationTime().getTime() - (new Date()).getTime());
+        return (int) (jwt.getJWTClaimsSet().getExpirationTime().getTime() - (new Date()).getTime());
     }
 
     public String createToken(UserDTO user, String ISSUER, String TOKEN_EXPIRE_TIME, String SECRET_KEY) throws TokenCreationException {
         try {
-            JWTClaimsSet claimsSet = (new JWTClaimsSet.Builder()).subject(user.getUsername()).issuer(ISSUER).claim("userid", user.getId()).claim("username", user.getUsername()).claim("roles", user.getRoles().stream().reduce((s1, s2) -> {
+            JWTClaimsSet claimsSet = (new JWTClaimsSet.Builder()).subject(user.getEmail()).issuer(ISSUER).claim("userid", user.getId()).claim("email", user.getEmail()).claim("roles", user.getRoles().stream().reduce((s1, s2) -> {
                 return s1 + "," + s2;
-            }).get()).expirationTime(new Date((new Date()).getTime() + (long)Integer.parseInt(TOKEN_EXPIRE_TIME))).build();
+            }).get()).expirationTime(new Date((new Date()).getTime() + (long) Integer.parseInt(TOKEN_EXPIRE_TIME))).build();
             Payload payload = new Payload(claimsSet.toJSONObject());
             JWSSigner signer = new MACSigner(SECRET_KEY);
             JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS256);
