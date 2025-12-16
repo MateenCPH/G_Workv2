@@ -9,7 +9,7 @@ import jakarta.persistence.EntityManagerFactory;
 
 import java.util.List;
 
-public class GroupDAO implements IDAO<GroupDTO, Long> {
+public class GroupDAO implements IDAO<GroupDTO, Integer> {
 
     private static GroupDAO instance;
     private static EntityManagerFactory emf;
@@ -22,8 +22,8 @@ public class GroupDAO implements IDAO<GroupDTO, Long> {
         return instance;
     }
 
-    @Override
-    public GroupDTO readById(Long id) throws ApiException {
+
+    public GroupDTO readById(Integer id) throws ApiException {
         try (EntityManager em = emf.createEntityManager()) {
             Group group = em.find(Group.class, id);
             if (group == null) {
@@ -48,13 +48,12 @@ public class GroupDAO implements IDAO<GroupDTO, Long> {
     }
 
     @Override
-    public GroupDTO update(Long id, GroupDTO groupDTO) throws ApiException {
-        // Not required for this task
+    public GroupDTO update(Integer integer, GroupDTO groupDTO) throws ApiException {
         return null;
     }
 
     @Override
-    public void delete(Long id) throws ApiException {
-        // Not required for this task
+    public void delete(Integer integer) throws ApiException {
+
     }
 }
