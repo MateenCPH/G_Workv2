@@ -61,6 +61,26 @@ public class TicketDTO {
         this.tags = tags;
     }
 
+    /**
+     * Constructor for testing purposes - allows setting custom createdAt and updatedAt timestamps
+     * Use this constructor when you need to create tickets with specific timestamps for testing
+     */
+    public TicketDTO(String subject, String description, Ticket.TicketStatus status,
+                     LocalDateTime createdAt, LocalDateTime updatedAt,
+                     UserDTO requester, UserDTO assignee, GroupDTO group,
+                     List<MessageDTO> messages, Set<TagDTO> tags) {
+        this.subject = subject;
+        this.description = description;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.requester = requester;
+        this.assignee = assignee;
+        this.group = group;
+        this.messages = messages;
+        this.tags = tags;
+    }
+
     // Custom equals and hashCode similar to UserDTO (based on subject and status)
     @Override
     public boolean equals(Object o) {

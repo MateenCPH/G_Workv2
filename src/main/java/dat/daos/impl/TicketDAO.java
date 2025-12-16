@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import dat.daos.IDAO;
 import dat.dtos.TicketDTO;
+import dat.dtos.UserDTO;
 import dat.entities.Group;
 import dat.entities.Tag;
 import dat.entities.Ticket;
@@ -12,6 +13,7 @@ import dat.exceptions.ApiException;
 import jakarta.persistence.*;
 import org.hibernate.exception.ConstraintViolationException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,6 +22,11 @@ public class TicketDAO implements IDAO<TicketDTO, Integer> {
 
     private static TicketDAO instance;
     private static EntityManagerFactory emf;
+    private final UserDAO userDAO;
+
+    private TicketDAO() {
+        this.userDAO = UserDAO.getInstance(emf);
+    }
 
     public static TicketDAO getInstance(EntityManagerFactory _emf) {
         if (instance == null) {
@@ -27,6 +34,54 @@ public class TicketDAO implements IDAO<TicketDTO, Integer> {
             instance = new TicketDAO();
         }
         return instance;
+    }
+
+    /**
+     * Helper method to lookup a user by email or ID using UserDAO
+     * @param userDTO DTO containing either email or ID
+     * @param userType "Requester" or "Assignee" for error messages
+     * @return User entity from database
+     * @throws ApiException if user not found
+     */
+    private User lookupUser(EntityManager em, UserDTO userDTO, String userType) throws ApiException {
+        if (userDTO == null) {
+            return null;
+        }
+
+        // Try email lookup first
+        if (userDTO.getEmail() != null && !userDTO.getEmail().isEmpty()) {
+            try {
+                UserDTO foundUser = userDAO.readByEmail(userDTO.getEmail());
+                return em.find(User.class, foundUser.getId());
+            } catch (ApiException e) {
+                throw new ApiException(404, userType + " with email " + userDTO.getEmail() + " not found");
+            }
+        }
+
+        // Fallback to ID lookup
+        if (userDTO.getId() > 0) {
+            User user = em.find(User.class, userDTO.getId());
+            if (user == null) {
+                throw new ApiException(404, userType + " with id " + userDTO.getId() + " not found");
+            }
+            return user;
+        }
+
+        return null;
+    }
+
+    /**
+     * Validates that a user has the AGENT role
+     * @param user User to validate
+     * @throws ApiException if user is not an agent
+     */
+    private void validateAgentRole(User user) throws ApiException {
+        boolean isAgent = user.getRoles().stream()
+                .anyMatch(role -> "AGENT".equals(role.getRoleName()));
+
+        if (!isAgent) {
+            throw new ApiException(400, "Only users with role AGENT can be assigned to tickets");
+        }
     }
 
     @Override
@@ -82,15 +137,21 @@ public class TicketDAO implements IDAO<TicketDTO, Integer> {
             // Set default status to OPEN if not provided
             ticket.setStatus(ticketDTO.getStatus() != null ? ticketDTO.getStatus() : Ticket.TicketStatus.OPEN);
 
-            // Handle assignee relationship
-            if (ticketDTO.getAssignee() != null) {
-                User assignee = em.find(User.class, ticketDTO.getAssignee().getId());
-                if (assignee != null) {
-                    ticket.setAssignee(assignee);
-                    // Automatically set group from assignee's group
-                    ticket.setGroup(assignee.getGroup());
-                }
-            } else if (ticketDTO.getGroup() != null && ticketDTO.getGroup().getId() != null) {
+            // Handle requester - lookup by email or ID
+            User requester = lookupUser(em, ticketDTO.getRequester(), "Requester");
+            if (requester != null) {
+                ticket.setRequester(requester);
+            }
+
+            // Handle assignee - lookup by email or ID, and validate AGENT role
+            User assignee = lookupUser(em, ticketDTO.getAssignee(), "Assignee");
+            if (assignee != null) {
+                // US2: Validate that assignee has AGENT role
+                validateAgentRole(assignee);
+                ticket.setAssignee(assignee);
+                // Automatically set group from assignee's group
+                ticket.setGroup(assignee.getGroup());
+            } else if (ticketDTO.getGroup() != null && ticketDTO.getGroup().getId() > 0) {
                 // If no assignee but group is specified, set the group
                 Group group = em.find(Group.class, ticketDTO.getGroup().getId());
                 if (group != null) {
@@ -98,6 +159,11 @@ public class TicketDAO implements IDAO<TicketDTO, Integer> {
                 }
             }
             // If both are null, ticket remains unassigned with no group
+
+            // Handle timestamps - use custom if provided, otherwise use current time
+            LocalDateTime now = LocalDateTime.now();
+            ticket.setCreatedAt(ticketDTO.getCreatedAt() != null ? ticketDTO.getCreatedAt() : now);
+            ticket.setUpdatedAt(ticketDTO.getUpdatedAt() != null ? ticketDTO.getUpdatedAt() : now);
 
             em.persist(ticket);
             em.getTransaction().commit();
@@ -124,26 +190,24 @@ public class TicketDAO implements IDAO<TicketDTO, Integer> {
                 ticket.setSubject(ticketDTO.getSubject());
             }
 
-            // Update requester if provided
-            if (ticketDTO.getRequester() != null && ticketDTO.getRequester().getId() > 0) {
-                User requester = em.find(User.class, ticketDTO.getRequester().getId());
-                if (requester != null) {
-                    ticket.setRequester(requester);
-                }
+            // Update requester if provided - lookup by email or ID
+            User requester = lookupUser(em, ticketDTO.getRequester(), "Requester");
+            if (requester != null) {
+                ticket.setRequester(requester);
             }
 
-            // Update assignee if provided
-            if (ticketDTO.getAssignee() != null && ticketDTO.getAssignee().getId() > 0) {
-                User assignee = em.find(User.class, ticketDTO.getAssignee().getId());
-                if (assignee != null) {
-                    ticket.setAssignee(assignee);
-                    // Automatically set group from assignee's group
-                    ticket.setGroup(assignee.getGroup());
-                }
+            // Update assignee if provided - lookup by email or ID, and validate AGENT role
+            User assignee = lookupUser(em, ticketDTO.getAssignee(), "Assignee");
+            if (assignee != null) {
+                // US2: Validate that assignee has AGENT role
+                validateAgentRole(assignee);
+                ticket.setAssignee(assignee);
+                // Automatically set group from assignee's group
+                ticket.setGroup(assignee.getGroup());
             }
 
             // Update group if provided (and no assignee was set)
-            if (ticketDTO.getGroup() != null && ticketDTO.getGroup().getId() != null
+            if (ticketDTO.getGroup() != null && ticketDTO.getGroup().getId() > 0
                     && (ticketDTO.getAssignee() == null || ticketDTO.getAssignee().getId() <= 0)) {
                 Group group = em.find(Group.class, ticketDTO.getGroup().getId());
                 if (group != null) {
@@ -167,7 +231,9 @@ public class TicketDAO implements IDAO<TicketDTO, Integer> {
                 ticket.setTags(tags);
             }
 
-            // updatedAt will be automatically updated by @UpdateTimestamp
+            // Update timestamp - use custom if provided, otherwise use current time
+            ticket.setUpdatedAt(ticketDTO.getUpdatedAt() != null ? ticketDTO.getUpdatedAt() : LocalDateTime.now());
+
             em.merge(ticket);
             em.getTransaction().commit();
 

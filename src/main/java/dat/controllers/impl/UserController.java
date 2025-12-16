@@ -30,8 +30,9 @@ public class UserController implements IController<UserDTO, Integer> {
             ctx.json(userDTO);
         } catch (IllegalArgumentException e) {
             throw new ApiException(400, "Invalid id: " + ctx.pathParam("id"));
-        } catch (NoResultException | EntityNotFoundException e) {}
-            throw new ApiException(404, "Ticket with id " + ctx.pathParam("id") + " not found");
+        } catch (NoResultException | EntityNotFoundException e) {
+            throw new ApiException(404, "User with id " + ctx.pathParam("id") + " not found");
+        }
     }
 
     @Override
@@ -41,7 +42,7 @@ public class UserController implements IController<UserDTO, Integer> {
             ctx.res().setStatus(200);
             ctx.json(userDTOS);
         } catch (EntityNotFoundException e) {
-            throw new ApiException(404, "Tickets not found");
+            throw new ApiException(404, "Users not found");
         }
     }
 

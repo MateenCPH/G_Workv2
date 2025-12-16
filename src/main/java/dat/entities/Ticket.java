@@ -4,10 +4,7 @@ package dat.entities;
 import dat.dtos.TicketDTO;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -34,12 +31,10 @@ public class Ticket {
     @Column(name = "description")
     private String description;
 
-    @CreationTimestamp
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @ManyToOne
@@ -71,6 +66,25 @@ public class Ticket {
 
     public Ticket(String subject, LocalDateTime createdAt, LocalDateTime updatedAt, User requester, User assignee, Group group, List<Message> messages, Set<Tag> tags, TicketStatus status) {
         this.subject = subject;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.requester = requester;
+        this.assignee = assignee;
+        this.group = group;
+        this.messages = messages;
+        this.tags = tags;
+        this.status = status;
+    }
+
+    /**
+     * Constructor for testing purposes - creates ticket with custom timestamps and description
+     * Use this when you need to create tickets with specific createdAt and updatedAt times
+     */
+    public Ticket(String subject, String description, LocalDateTime createdAt, LocalDateTime updatedAt,
+                  User requester, User assignee, Group group, List<Message> messages,
+                  Set<Tag> tags, TicketStatus status) {
+        this.subject = subject;
+        this.description = description;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.requester = requester;

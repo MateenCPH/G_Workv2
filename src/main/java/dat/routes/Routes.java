@@ -15,7 +15,7 @@ public class Routes {
         return () -> {
                 path("/plants", plantRoute.getRoutes());
                 path("/tickets", ticketRoute.getRoutes());
-                path("/users", userRoute.getRoutes());
+                path("/myusers", userRoute.getRoutes());
                 path("/groups", groupRoute.getRoutes());
         };
     }
