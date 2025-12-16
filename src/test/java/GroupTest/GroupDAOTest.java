@@ -29,9 +29,18 @@ class GroupDAOTest {
         populator.populateDatabase();
 
         List<GroupDTO> allGroups = groupDAO.readAll();
-        supportTeamDTO = allGroups.get(0);
-        developmentTeamDTO = allGroups.get(1);
-        salesTeamDTO = allGroups.get(2);
+        supportTeamDTO = allGroups.stream()
+                .filter(g -> "Support Team".equals(g.getName()))
+                .findFirst()
+                .orElseThrow();
+        developmentTeamDTO = allGroups.stream()
+                .filter(g -> "Development Team".equals(g.getName()))
+                .findFirst()
+                .orElseThrow();
+        salesTeamDTO = allGroups.stream()
+                .filter(g -> "Sales Team".equals(g.getName()))
+                .findFirst()
+                .orElseThrow();
     }
 
     @AfterEach
