@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,5 +35,30 @@ public class GroupDTO {
     public GroupDTO(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        GroupDTO groupDTO = (GroupDTO) o;
+        return Objects.equals(id, groupDTO.id) && 
+               Objects.equals(name, groupDTO.name) && 
+               Objects.equals(description, groupDTO.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description);
+    }
+
+    @Override
+    public String toString() {
+        return "GroupDTO(id=" + id + ", name=" + name + ", description=" + description + 
+               ", memberIds=" + memberIds + ")";
     }
 }
