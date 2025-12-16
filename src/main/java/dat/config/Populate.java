@@ -37,10 +37,10 @@ public class Populate {
             admin.addRole(adminRole);
             em.persist(admin);
 
-            User agent1 = new User("agent1@example.com", "agent123");
-            agent1.setFirstName("Frederik");
-            agent1.setLastName("IT-Runner");
-            agent1.setUsername("agent1");
+            User agent1 = new User("mjar@teknologisk.dk", "password123");
+            agent1.setFirstName("Mateen");
+            agent1.setLastName("Rafiq");
+            agent1.setUsername("MJAR");
             agent1.addRole(agentRole);
             em.persist(agent1);
 
