@@ -13,6 +13,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.TypedQuery;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class MessageDAO implements IDAO<MessageDTO, Integer> {
@@ -81,6 +82,12 @@ public class MessageDAO implements IDAO<MessageDTO, Integer> {
 
             // Persist message (cascade will handle attachments)
             em.persist(message);
+            ticket.getMessages().add(message); // Maintain bidirectional relationship
+
+            // Update ticket's updatedAt timestamp
+            ticket.setUpdatedAt(LocalDateTime.now());
+            em.merge(ticket);
+
             em.getTransaction().commit();
 
             return new MessageDTO(message);
@@ -98,6 +105,5 @@ public class MessageDAO implements IDAO<MessageDTO, Integer> {
 
     @Override
     public void delete(Integer integer) throws ApiException {
-
     }
 }
