@@ -35,7 +35,7 @@ public class Populate {
             admin.addRole(adminRole);
             em.persist(admin);
 
-            User agent1 = new User("mjar@teknologisk.dk", "password123");
+            User agent1 = new User("mjar@teknologisk.dk", "Password123");
             agent1.setFirstName("Mateen");
             agent1.setLastName("Rafiq");
             agent1.setUsername("MJAR");
@@ -49,12 +49,19 @@ public class Populate {
             agent2.addRole(agentRole);
             em.persist(agent2);
 
-            User agent3 = new User("freo@teknologisk.dk", "password123");
+            User agent3 = new User("freo@teknologisk.dk", "Password123");
             agent3.setFirstName("Frederik");
             agent3.setLastName("Olfert");
             agent3.setUsername("FREO");
             agent3.addRole(agentRole);
             em.persist(agent3);
+
+            User agent4 = new User("chcp@teknologisk.dk", "Password123");
+            agent4.setFirstName("Christian");
+            agent4.setLastName("Carp");
+            agent4.setUsername("CARP");
+            agent4.addRole(agentRole);
+            em.persist(agent4);
 
             User user1 = new User("user1@example.com", "user123");
             user1.setFirstName("Alice");
