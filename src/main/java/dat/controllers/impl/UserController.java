@@ -53,7 +53,20 @@ public class UserController implements IController<UserDTO, Integer> {
 
     @Override
     public void update(Context ctx) {
+        try {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            UserDTO userDTO = ctx.bodyAsClass(UserDTO.class);
 
+            UserDTO updatedUser = dao.update(id, userDTO);
+            ctx.res().setStatus(200);
+            ctx.json(updatedUser);
+        } catch (IllegalArgumentException e) {
+            throw new ApiException(400, "Invalid id: " + ctx.pathParam("id"));
+        } catch (ApiException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ApiException(500, "Error updating user: " + e.getMessage());
+        }
     }
 
     @Override

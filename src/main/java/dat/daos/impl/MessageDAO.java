@@ -39,6 +39,13 @@ public class MessageDAO implements IDAO<MessageDTO, Integer> {
         try (EntityManager em = emf.createEntityManager()) {
             TypedQuery<MessageDTO> query = em.createQuery("SELECT new dat.dtos.MessageDTO(m) FROM Message m", MessageDTO.class);
             List<MessageDTO> messages = query.getResultList();
+
+            for (MessageDTO messageDTO : messages) {
+                if (messageDTO.getBody() != null) {
+                    messageDTO.getBody().length(); // Touch to force load
+                }
+            }
+
             if (messages.isEmpty()) {
                 throw new EntityNotFoundException("No messages found");
             }

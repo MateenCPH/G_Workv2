@@ -14,10 +14,7 @@ public class UserRoute {
         return () -> {
             get("/", controller::readAll, Role.ANYONE);
             get("/{id}", controller::readById, Role.ANYONE);
-            post("/", controller::create, Role.ANYONE);
             put("/{id}", controller::update, Role.ANYONE);
-            delete("/{id}", controller::delete, Role.ANYONE);
         };
     }
 }
-

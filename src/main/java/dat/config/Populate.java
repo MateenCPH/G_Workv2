@@ -411,6 +411,65 @@ public class Populate {
             message3.setTicket(ticket2);
             em.persist(message3);
 
+            // Add after ticket24
+            Ticket ticket25 = new Ticket();
+            ticket25.setSubject("Critical issue with customer database synchronization causing data inconsistencies across multiple regional servers and affecting real-time reporting capabilities for management dashboard");
+            ticket25.setDescription("We are experiencing severe problems with our customer database synchronization process. The issue started approximately 48 hours ago and is affecting all three regional servers (EU, US, and ASIA). Customer records are not syncing properly between servers, leading to inconsistent data across regions. This is causing major problems for our sales team who rely on real-time customer information for their daily operations. Additionally, our management dashboard is showing incorrect numbers and metrics, which is impacting business decisions. The error logs show timeout errors and connection pool exhaustion messages. We need this resolved urgently as it's affecting our ability to serve customers effectively.");
+            ticket25.setRequester(user3);
+            ticket25.setAssignee(agent1);
+            ticket25.setGroup(itRunner);
+            ticket25.setStatus(Ticket.TicketStatus.OPEN);
+            ticket25.setCreatedAt(LocalDateTime.now().minusDays(2));
+            ticket25.setUpdatedAt(LocalDateTime.now().minusHours(3));
+            ticket25.getTags().add(runners);
+            ticket25.getTags().add(support);
+            em.persist(ticket25);
+
+            Ticket ticket26 = new Ticket();
+            ticket26.setSubject("Urgent request for implementation of new security protocols and two-factor authentication system for all company accounts following recent security audit recommendations and compliance requirements");
+            ticket26.setDescription("Following our recent comprehensive security audit conducted by external consultants, we have received several critical recommendations that need to be implemented immediately to maintain our ISO 27001 certification and comply with GDPR requirements. The most pressing issue is the implementation of two-factor authentication (2FA) across all company systems including email, VPN, and internal applications. Currently, we only have basic password authentication which the audit identified as a significant security vulnerability. We need to deploy 2FA for approximately 250 employees across multiple departments. Additionally, we need to implement stricter password policies, enable session timeout controls, and set up monitoring for suspicious login attempts. The audit report deadline is in three weeks, and we must show substantial progress on these security improvements.");
+            ticket26.setRequester(user4);
+            ticket26.setAssignee(agent1);
+            ticket26.setGroup(itRunner);
+            ticket26.setStatus(Ticket.TicketStatus.PENDING);
+            ticket26.setCreatedAt(LocalDateTime.now().minusDays(4));
+            ticket26.setUpdatedAt(LocalDateTime.now().minusDays(1));
+            ticket26.getTags().add(runners);
+            ticket26.getTags().add(indkoeb);
+            em.persist(ticket26);
+
+// Add messages for ticket25
+            Message message4 = new Message();
+            message4.setBody("Thank you for reporting this critical issue. I've immediately escalated this to our database administration team and our lead developer is now investigating the synchronization problems. From the initial analysis, it appears that one of the recent database schema updates may have caused conflicts in the replication process between the regional servers. We're currently reviewing the error logs you mentioned and have identified several timeout issues that seem to correlate with peak usage hours. I'll keep you updated every 2 hours with our progress. In the meantime, could you provide me with specific examples of customer records that are showing inconsistencies? This will help us trace the exact point of failure in the sync process.");
+            message4.setAuthor(agent1);
+            message4.setTicket(ticket25);
+            em.persist(message4);
+
+            Message message5 = new Message();
+            message5.setBody("Thank you for the quick response, Mateen. Here are some specific examples: Customer ID 45892 shows different email addresses on EU server (customer@oldmail.com) versus US server (customer@newmail.com). Customer ID 73451 has conflicting order histories - the EU server shows 15 orders while the US server only shows 12 orders for the same time period. Customer ID 88234 appears as 'active' on ASIA server but 'inactive' on EU server. These inconsistencies are making it impossible for our sales team to have accurate customer conversations. Additionally, our finance team is reporting that invoice data is also affected, which could lead to billing errors. This is extremely urgent as we have several important client meetings scheduled tomorrow where we need to present accurate customer data and sales metrics.");
+            message5.setAuthor(user3);
+            message5.setTicket(ticket25);
+            em.persist(message5);
+
+            Message message6 = new Message();
+            message6.setBody("I've now confirmed the root cause of the synchronization issues. The database schema update deployed on Monday evening introduced a new constraint that's conflicting with the replication triggers. Our team has developed a patch that will resolve the synchronization conflicts and ensure data consistency across all regional servers. We're planning to deploy this patch during tonight's maintenance window (2 AM - 4 AM CET) to minimize disruption. Before deployment, we'll create complete backups of all three regional databases. After the patch is applied, we'll run a comprehensive data reconciliation process to identify and fix all existing inconsistencies like the examples you provided. We estimate this full process will take approximately 6-8 hours to complete. I'll send you a detailed timeline and will be available throughout the entire process to answer any questions.");
+            message6.setAuthor(agent1);
+            message6.setTicket(ticket25);
+            em.persist(message6);
+
+// Add messages for ticket26
+            Message message7 = new Message();
+            message7.setBody("I've reviewed the security audit report and understand the urgency of implementing these security improvements, especially given the ISO 27001 certification requirements and the three-week deadline. I've already started working on a comprehensive implementation plan for the two-factor authentication system. We're evaluating two leading 2FA solutions: Microsoft Authenticator (which integrates seamlessly with our existing Microsoft 365 environment) and Duo Security (which offers more flexibility for our various internal applications). For the rollout strategy, I recommend a phased approach: Week 1 - Deploy 2FA for IT department and executives (approximately 30 users) to identify and resolve any issues; Week 2 - Roll out to remaining employees in groups of 50; Week 3 - Complete deployment and conduct training sessions. Regarding the additional security requirements (password policies, session timeouts, login monitoring), I'll prepare a detailed technical specification document by end of day tomorrow.");
+            message7.setAuthor(agent1);
+            message7.setTicket(ticket26);
+            em.persist(message7);
+
+            Message message8 = new Message();
+            message8.setBody("Your proposed timeline and phased approach sound excellent and very reasonable given the complexity of the implementation. I particularly appreciate the idea of starting with a smaller pilot group before rolling out to the entire organization - this will definitely help us identify and address any potential issues early. One additional concern from the audit report that I forgot to mention: we also need to implement automatic account lockout after failed login attempts and establish a formal process for password recovery that doesn't compromise security. The current process of IT manually resetting passwords via email is flagged as a security risk. Could you also include recommendations for security awareness training for all employees? The auditors emphasized that technical controls are only effective if employees understand and follow security best practices. Please keep me updated on the vendor evaluation and let me know if you need any budget approvals for the 2FA solution licenses.");
+            message8.setAuthor(user4);
+            message8.setTicket(ticket26);
+            em.persist(message8);
+
             em.getTransaction().commit();
 
             System.out.println("Database populated successfully with users, tickets, groups, tags, and messages!");

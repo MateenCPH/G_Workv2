@@ -101,6 +101,17 @@ public class TicketDAO implements IDAO<TicketDTO, Integer> {
         try (EntityManager em = emf.createEntityManager()) {
             TypedQuery<TicketDTO> query = em.createQuery("SELECT new dat.dtos.TicketDTO(t) FROM Ticket t", TicketDTO.class);
             List<TicketDTO> tickets = query.getResultList();
+
+            // Force LOB fields to load before closing EntityManager
+            for (TicketDTO ticketDTO : tickets) {
+                if (ticketDTO.getSubject() != null) {
+                    ticketDTO.getSubject().length(); // Touch to force load
+                }
+                if (ticketDTO.getDescription() != null) {
+                    ticketDTO.getDescription().length(); // Touch to force load
+                }
+            }
+
             if (tickets.isEmpty()) {
                 throw new EntityNotFoundException("No tickets found");
             }
@@ -188,6 +199,11 @@ public class TicketDAO implements IDAO<TicketDTO, Integer> {
             // Update subject if provided
             if (ticketDTO.getSubject() != null) {
                 ticket.setSubject(ticketDTO.getSubject());
+            }
+
+            // Update status if provided
+            if (ticketDTO.getStatus() != null) {
+                ticket.setStatus(ticketDTO.getStatus());
             }
 
             // Update requester if provided - lookup by email or ID

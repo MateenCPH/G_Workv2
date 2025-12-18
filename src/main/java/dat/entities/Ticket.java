@@ -25,10 +25,10 @@ public class Ticket {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "subject", nullable = false)
+    @Column(name = "subject", nullable = false, columnDefinition = "TEXT")
     private String subject;
 
-    @Column(name = "description")
+    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "created_at", nullable = false)

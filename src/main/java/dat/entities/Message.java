@@ -35,7 +35,7 @@ public class Message {
     @Column(name = "internal_flag")
     private boolean internalFlag;
 
-    @Column(name = "body")
+    @Column(name = "body", columnDefinition = "TEXT")
     private String body;
 
     @CreationTimestamp
