@@ -73,7 +73,7 @@ class GroupDAOTest {
     void readByIdNotFound() {
         // Act & Assert
         ApiException exception = assertThrows(ApiException.class, () -> {
-            groupDAO.readById(999L);
+            groupDAO.readById(999);
         });
         
         assertThat(exception.getStatusCode(), is(404));

@@ -115,6 +115,8 @@ public class Populator {
             ticket1.setAssignee(agent1);
             ticket1.setGroup(supportGroup);
             ticket1.setStatus(Ticket.TicketStatus.OPEN);
+            ticket1.setCreatedAt(now);
+            ticket1.setUpdatedAt(now);
             Set<Tag> ticket1Tags = new HashSet<>();
             ticket1Tags.add(urgentTag);
             ticket1Tags.add(bugTag);
@@ -140,6 +142,8 @@ public class Populator {
             ticket2.setAssignee(agent2);
             ticket2.setGroup(salesGroup);
             ticket2.setStatus(Ticket.TicketStatus.PENDING);
+            ticket2.setCreatedAt(now);
+            ticket2.setUpdatedAt(now);
             Set<Tag> ticket2Tags = new HashSet<>();
             ticket2Tags.add(questionTag);
             ticket2.setTags(ticket2Tags);
@@ -170,6 +174,8 @@ public class Populator {
             ticket3.setAssignee(agent2);
             ticket3.setGroup(supportGroup);
             ticket3.setStatus(Ticket.TicketStatus.SOLVED);
+            ticket3.setCreatedAt(now);
+            ticket3.setUpdatedAt(now);
             ticket3.setTags(new HashSet<>());
             em.persist(ticket3);
 
