@@ -36,4 +36,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ticket_api:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/gwork_api:latest
