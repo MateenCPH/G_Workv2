@@ -1,0 +1,30 @@
+@startuml
+
+title Simplified Domain Layer
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam class<<Entity>>BackgroundColor #FFF3E0
+
+' =======================
+' Entities
+' =======================
+package "dat.entities" {
+  class User <<Entity>>
+  class Group <<Entity>>
+  class Ticket <<Entity>> {
+    +createdAt : LocalDateTime
+  }
+  class Message <<Entity>>
+  class Tag <<Entity>>
+  class Attachment <<Entity>>
+}
+
+Group "1" o-- "0..*" User : members
+Ticket "1" --> "1" User : createdBy
+Ticket "1" o-- "0..*" Message
+Ticket "0..*" -- "0..*" Tag
+Ticket "0..*" o-- "0..*" Attachment
+
+@enduml

@@ -1,0 +1,254 @@
+Created an **easy-to-read PlantUML class diagram** for the `dat` package. It groups layers (config, controllers, routes, DAOs, DTOs, entities, security, utils), shows key **relations** (routes \-\> controllers \-\> DAOs \-\> entities, controller \-\> DTOs, config \-\> EMF/populate), and includes a few **attributes** where they are clearly implied (e.g., `Ticket.createdAt`, `User`, `Role`).  
+
+Add this file to `doc`:
+
+```plantuml
+@startuml
+title GWork - dat package (overview class diagram)
+skinparam style strictuml
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+left to right direction
+
+' =======================
+' Packages (layers)
+' =======================
+package "dat" as pkg_dat {
+  class Main
+}
+
+package "dat.config" as pkg_config {
+  class ApplicationConfig
+  class HibernateConfig
+  class Populate
+}
+
+package "dat.routes" as pkg_routes {
+  class Routes
+  class UserRoute
+  class GroupRoute
+  class TicketRoute
+  class MessageRoute
+  class TagRoute
+}
+
+package "dat.controllers" as pkg_controllers {
+  interface IController
+}
+
+package "dat.controllers.impl" as pkg_controllers_impl {
+  class ExceptionController
+  class UserController
+  class GroupController
+  class TicketController
+  class MessageController
+  class TagController
+}
+
+package "dat.daos" as pkg_daos {
+  interface IDAO
+}
+
+package "dat.daos.impl" as pkg_daos_impl {
+  class UserDAO
+  class GroupDAO
+  class TicketDAO
+  class MessageDAO
+  class TagDAO
+  class AttachmentDAO
+}
+
+package "dat.dtos" as pkg_dtos {
+  class UserDTO
+  class GroupDTO
+  class TicketDTO
+  class MessageDTO
+  class TagDTO
+  class AttachmentDTO
+}
+
+package "dat.entities" as pkg_entities {
+  class User
+  class Group
+  class Ticket {
+    +createdAt : LocalDateTime
+  }
+  class Message
+  class Tag
+  class Attachment
+}
+
+package "dat.exceptions" as pkg_exceptions {
+  class ApiException
+  class "Message" as ApiMessage
+}
+
+package "dat.utils" as pkg_utils {
+  class Utils {
+    +getPropertyValue(propName : String, resourceName : String) : String
+    +getObjectMapper() : ObjectMapper
+    +convertToJsonMessage(ctx : Context, property : String, message : String) : String
+  }
+}
+
+package "dat.security" as pkg_security {
+  package "controllers" as pkg_sec_controllers {
+    interface IAccessController
+    interface ISecurityController
+    class AccessController
+    class SecurityController
+  }
+
+  package "daos" as pkg_sec_daos {
+    interface ISecurityDAO
+    class SecurityDAO
+  }
+
+  package "entities" as pkg_sec_entities {
+    interface ISecurityUser
+    class Role
+  }
+
+  package "enums" as pkg_sec_enums {
+    enum "Role" as RoleEnum
+  }
+
+  package "exceptions" as pkg_sec_exceptions {
+    class "ApiException" as SecurityApiException
+    class NotAuthorizedException
+    class TokenCreationException
+    class ValidationException
+  }
+
+  package "routes" as pkg_sec_routes {
+    class SecurityRoutes
+  }
+
+  package "tokenSecurity" as pkg_sec_token {
+    interface ITokenSecurity
+    class TokenSecurity
+  }
+}
+
+' =======================
+' High-level wiring
+' =======================
+Main --> ApplicationConfig : bootstraps
+ApplicationConfig --> Routes : registers
+ApplicationConfig --> HibernateConfig : configures persistence
+ApplicationConfig --> pkg_sec_routes.SecurityRoutes : registers security routes
+
+HibernateConfig --> Populate : used for seeding
+HibernateConfig ..> Utils : reads properties
+
+Populate ..> pkg_entities.User
+Populate ..> pkg_entities.Group
+Populate ..> pkg_entities.Ticket
+Populate ..> pkg_entities.Message
+Populate ..> pkg_entities.Tag
+Populate ..> pkg_entities.Attachment
+
+' =======================
+' Routes -> Controllers
+' =======================
+Routes o-- UserRoute
+Routes o-- GroupRoute
+Routes o-- TicketRoute
+Routes o-- MessageRoute
+Routes o-- TagRoute
+
+UserRoute --> UserController
+GroupRoute --> GroupController
+TicketRoute --> TicketController
+MessageRoute --> MessageController
+TagRoute --> TagController
+
+pkg_sec_routes.SecurityRoutes --> pkg_sec_controllers.SecurityController
+
+' =======================
+' Controllers implement contract
+' =======================
+UserController ..|> IController
+GroupController ..|> IController
+TicketController ..|> IController
+MessageController ..|> IController
+TagController ..|> IController
+
+ExceptionController ..> pkg_exceptions.ApiException : maps to HTTP response
+
+' =======================
+' Controllers -> DAOs (service style)
+' =======================
+UserController --> UserDAO
+GroupController --> GroupDAO
+TicketController --> TicketDAO
+MessageController --> MessageDAO
+TagController --> TagDAO
+
+' =======================
+' DAOs implement IDAO
+' =======================
+UserDAO ..|> IDAO
+GroupDAO ..|> IDAO
+TicketDAO ..|> IDAO
+MessageDAO ..|> IDAO
+TagDAO ..|> IDAO
+AttachmentDAO ..|> IDAO
+
+' =======================
+' DAOs -> Entities
+' =======================
+UserDAO --> User
+GroupDAO --> Group
+TicketDAO --> Ticket
+MessageDAO --> Message
+TagDAO --> Tag
+AttachmentDAO --> Attachment
+
+' =======================
+' Controllers <-> DTOs
+' =======================
+UserController ..> UserDTO
+GroupController ..> GroupDTO
+TicketController ..> TicketDTO
+MessageController ..> MessageDTO
+TagController ..> TagDTO
+
+' =======================
+' Typical domain relations (generic, readable)
+' =======================
+Group "1" o-- "0..*" User : members
+Ticket "1" --> "1" User : createdBy
+Ticket "1" o-- "0..*" Message : messages
+Ticket "0..*" -- "0..*" Tag : tags
+Ticket "0..*" o-- "0..*" Attachment : attachments
+
+' =======================
+' Security wiring
+' =======================
+pkg_sec_controllers.AccessController ..|> pkg_sec_controllers.IAccessController
+pkg_sec_controllers.SecurityController ..|> pkg_sec_controllers.ISecurityController
+
+pkg_sec_daos.SecurityDAO ..|> pkg_sec_daos.ISecurityDAO
+pkg_sec_controllers.SecurityController --> pkg_sec_daos.SecurityDAO
+
+pkg_sec_token.TokenSecurity ..|> pkg_sec_token.ITokenSecurity
+pkg_sec_controllers.SecurityController --> pkg_sec_token.TokenSecurity
+
+User ..|> pkg_sec_entities.ISecurityUser
+User "0..*" -- "0..*" pkg_sec_entities.Role : roles
+pkg_sec_entities.Role --> RoleEnum
+
+' =======================
+' Utils usage
+' =======================
+pkg_controllers_impl.ExceptionController ..> Utils : JSON message
+Utils ..> pkg_sec_exceptions.SecurityApiException
+Utils ..> pkg_exceptions.ApiException
+
+@enduml
+```
+
+Save as `doc`\`classDiagram_dat_overview.puml`.

@@ -1,0 +1,235 @@
+@startuml
+title GWork – dat package (overview class diagram)
+
+
+
+left to right direction
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam class<<Route>>BackgroundColor #ECEFF1
+skinparam class<<Controller>>BackgroundColor #E3F2FD
+skinparam class<<DAO>>BackgroundColor #E8F5E9
+skinparam class<<DTO>>BackgroundColor #F3E5F5
+skinparam class<<Entity>>BackgroundColor #FFF3E0
+skinparam class<<Utility>>BackgroundColor #FAFAFA
+skinparam class<<Security>>BackgroundColor #FCE4EC
+
+' =======================
+' Core + Config
+' =======================
+package "dat" {
+  class Main
+}
+
+package "dat.config" {
+  class ApplicationConfig
+  class HibernateConfig
+  class Populate
+}
+
+Main --> ApplicationConfig : bootstraps
+ApplicationConfig --> HibernateConfig
+HibernateConfig --> Populate
+HibernateConfig ..> Utils
+
+' =======================
+' Routes
+' =======================
+package "dat.routes" {
+  together {
+    class Routes
+    class UserRoute <<Route>>
+    class GroupRoute <<Route>>
+    class TicketRoute <<Route>>
+    class MessageRoute <<Route>>
+    class TagRoute <<Route>>
+  }
+}
+
+Routes o-- UserRoute
+Routes o-- GroupRoute
+Routes o-- TicketRoute
+Routes o-- MessageRoute
+Routes o-- TagRoute
+
+' =======================
+' Controllers
+' =======================
+package "dat.controllers" {
+  interface IController
+}
+
+package "dat.controllers.impl" {
+  class ExceptionController <<Controller>>
+  class UserController <<Controller>>
+  class GroupController <<Controller>>
+  class TicketController <<Controller>>
+  class MessageController <<Controller>>
+  class TagController <<Controller>>
+}
+
+UserRoute --> UserController
+GroupRoute --> GroupController
+TicketRoute --> TicketController
+MessageRoute --> MessageController
+TagRoute --> TagController
+
+UserController ..|> IController
+GroupController ..|> IController
+TicketController ..|> IController
+MessageController ..|> IController
+TagController ..|> IController
+
+' =======================
+' DAOs
+' =======================
+package "dat.daos" {
+  interface IDAO
+}
+
+package "dat.daos.impl" {
+  class UserDAO <<DAO>>
+  class GroupDAO <<DAO>>
+  class TicketDAO <<DAO>>
+  class MessageDAO <<DAO>>
+  class TagDAO <<DAO>>
+  class AttachmentDAO <<DAO>>
+}
+
+UserController ..> UserDAO
+GroupController ..> GroupDAO
+TicketController ..> TicketDAO
+MessageController ..> MessageDAO
+TagController ..> TagDAO
+
+UserDAO ..|> IDAO
+GroupDAO ..|> IDAO
+TicketDAO ..|> IDAO
+MessageDAO ..|> IDAO
+TagDAO ..|> IDAO
+AttachmentDAO ..|> IDAO
+
+' =======================
+' DTOs
+' =======================
+package "dat.dtos" {
+  class UserDTO <<DTO>>
+  class GroupDTO <<DTO>>
+  class TicketDTO <<DTO>>
+  class MessageDTO <<DTO>>
+  class TagDTO <<DTO>>
+  class AttachmentDTO <<DTO>>
+}
+
+UserController ..> UserDTO
+GroupController ..> GroupDTO
+TicketController ..> TicketDTO
+MessageController ..> MessageDTO
+TagController ..> TagDTO
+
+' =======================
+' Entities
+' =======================
+package "dat.entities" {
+  class User <<Entity>>
+  class Group <<Entity>>
+  class Ticket <<Entity>> {
+    +createdAt : LocalDateTime
+  }
+  class Message <<Entity>>
+  class Tag <<Entity>>
+  class Attachment <<Entity>>
+}
+
+UserDAO --> User
+GroupDAO --> Group
+TicketDAO --> Ticket
+MessageDAO --> Message
+TagDAO --> Tag
+AttachmentDAO --> Attachment
+
+Group "1" o-- "0..*" User : members
+Ticket "1" --> "1" User : createdBy
+Ticket "1" o-- "0..*" Message
+Ticket "0..*" -- "0..*" Tag
+Ticket "0..*" o-- "0..*" Attachment
+
+' =======================
+' Exceptions + Utils
+' =======================
+package "dat.exceptions" {
+  class ApiException
+  class "Message" as ApiMessage
+}
+
+ExceptionController ..> ApiException
+
+package "dat.utils" {
+  class Utils <<Utility>>
+}
+
+ExceptionController ..> Utils
+
+' =======================
+' Security (isolated island)
+' =======================
+package "dat.security" {
+
+  package "controllers" {
+    interface IAccessController
+    interface ISecurityController
+    class AccessController <<Security>>
+    class SecurityController <<Security>>
+  }
+
+  package "daos" {
+    interface ISecurityDAO
+    class SecurityDAO <<Security>>
+  }
+
+  package "entities" {
+    interface ISecurityUser
+    class Role <<Security>>
+  }
+
+  package "enums" {
+    enum "Role" as RoleEnum
+  }
+
+  package "routes" {
+    class SecurityRoutes <<Security>>
+  }
+
+  package "tokenSecurity" {
+    interface ITokenSecurity
+    class TokenSecurity <<Security>>
+  }
+
+  package "exceptions" {
+    class "ApiException" as SecurityApiException
+    class NotAuthorizedException
+    class TokenCreationException
+    class ValidationException
+  }
+}
+
+SecurityRoutes --> SecurityController
+SecurityController ..|> ISecurityController
+AccessController ..|> IAccessController
+
+SecurityController --> SecurityDAO
+SecurityDAO ..|> ISecurityDAO
+
+SecurityController --> TokenSecurity
+TokenSecurity ..|> ITokenSecurity
+
+User ..|> ISecurityUser
+User "0..*" -- "0..*" Role
+Role --> RoleEnum
+
+Utils ..> ApiException
+Utils ..> SecurityApiException
+
+@enduml

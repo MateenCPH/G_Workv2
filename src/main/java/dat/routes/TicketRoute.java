@@ -1,6 +1,5 @@
 package dat.routes;
 
-import dat.controllers.impl.PlantController;
 import dat.controllers.impl.TicketController;
 import dat.security.enums.Role;
 import io.javalin.apibuilder.EndpointGroup;

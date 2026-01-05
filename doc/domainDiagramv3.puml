@@ -1,0 +1,68 @@
+@startuml
+title GWork – Domain Model (overview)
+
+skinparam style strictuml
+skinparam shadowing false
+skinparam linetype ortho
+skinparam packageStyle rectangle
+
+top to bottom direction
+
+' =======================
+' Core system
+' =======================
+class GWork
+
+' =======================
+' Primary domain objects
+' =======================
+class User
+class Group
+class Ticket
+
+' =======================
+' Ticket content
+' =======================
+class Message
+class Attachment
+class Tag
+
+' =======================
+' Layout helpers
+' =======================
+User -[hidden]- Group
+Message -[hidden]- Attachment
+Attachment -[hidden]- Tag
+
+
+' =======================
+' High-level ownership
+' =======================
+GWork o-- User
+GWork o-- Group
+GWork o-- Ticket
+GWork o-- Tag
+
+' =======================
+' User & Group
+' =======================
+User "0..*" -- "0..*" Group : membership
+
+' =======================
+' Ticket lifecycle
+' =======================
+User "1" --> "0..*" Ticket : createdBy
+User "0..*" --> "0..*" Ticket : assignee (agent)
+Group "1" --> "0..*" Ticket : queue
+
+' =======================
+' Ticket structure
+' =======================
+Ticket "1" *-- "0..*" Message
+Message "1" o-- "0..*" Attachment
+Ticket "0..*" -- "0..*" Tag
+
+' =======================
+' View dependencies (non-owning)
+' =======================
+@enduml

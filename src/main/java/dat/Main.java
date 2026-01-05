@@ -1,10 +1,7 @@
 package dat;
 
 import dat.config.ApplicationConfig;
-import dat.config.HibernateConfig;
 import dat.config.Populate;
-import dat.daos.impl.PlantDAO;
-import jakarta.persistence.EntityManagerFactory;
 
 public class Main {
 

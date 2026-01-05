@@ -1,6 +1,5 @@
 package dat.daos;
 
-import dat.entities.Plant;
 import dat.exceptions.ApiException;
 
 import java.util.List;

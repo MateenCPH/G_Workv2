@@ -47,7 +47,6 @@ public class TicketDAO implements IDAO<TicketDTO, Integer> {
         if (userDTO == null) {
             return null;
         }
-
         // Try email lookup first
         if (userDTO.getEmail() != null && !userDTO.getEmail().isEmpty()) {
             try {
@@ -57,7 +56,6 @@ public class TicketDAO implements IDAO<TicketDTO, Integer> {
                 throw new ApiException(404, userType + " with email " + userDTO.getEmail() + " not found");
             }
         }
-
         // Fallback to ID lookup
         if (userDTO.getId() > 0) {
             User user = em.find(User.class, userDTO.getId());
@@ -66,7 +64,6 @@ public class TicketDAO implements IDAO<TicketDTO, Integer> {
             }
             return user;
         }
-
         return null;
     }
 

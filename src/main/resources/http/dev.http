@@ -44,38 +44,6 @@ Accept: application/json
 Authorization: Bearer {{jwt_token}}
 
 ###
-GET {{url}}/plants
-
-###
-GET {{url}}/plants/1
-
-###
-GET {{url}}/plants/type/ROSE
-
-###
-GET {{url}}/plants/maxHeight/300
-
-###
-GET {{url}}/plants/plantNames
-
-###
-GET {{url}}/plants/pantNamesSorted
-
-###
-
-POST {{url}}/plants
-Content-Type: application/json
-Accept: application/json
-Authorization: Bearer {{jwt_token}}
-
-{
-  "plantType": "ROSE",
-  "plantName": "myPlantName",
-  "maxHeight": 100,
-  "plantPrice": 20.00
-}
-
-###
 
 #PUT {{url}}/hotels/3
 #Content-Type: application/json
